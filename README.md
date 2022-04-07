@@ -1,30 +1,6 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo_text.svg" width="320" alt="Nest Logo" /></a>
-</p>
-
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
-
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
-
 ## Description
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+CRUD using pulumi to deploy into CloudRun
 
 ## Installation
 
@@ -73,7 +49,37 @@ Pour faire un deploiment local il faut:
 * Configurer gcloud
     ```bash
     gcloud config set project ysamir-data-processing-test # à modifier en fonction de votre projet
-    gcloud auth application-default login
+    gcloud auth application-default login # ou gcloud auth login
     gcloud auth configure-docker
     ```
     
+## FAQ (pulumi)
+
+###  Résoudre le probleme: <b>error: the current deployment has 1 resource(s) with pending operation</b>
+```json
+{
+  "commandResult": {
+    "stdout": "Updating (rdo-admin-api-v1):\n \n",
+    "stderr": "error: the current deployment has 1 resource(s) with pending operations:\n  * urn:pulumi:rdo-admin-api-v1::rdo-admin-api-v1::gcp:cloudrun/service:Service::core-admin-api, interrupted while creating\n\nThese resources are in an unknown state because the Pulumi CLI was interrupted while\nwaiting for changes to these resources to complete. You should confirm whether or not the\noperations listed completed successfully by checking the state of the appropriate provider.\nFor example, if you are using AWS, you can confirm using the AWS Console.\n\nOnce you have confirmed the status of the interrupted operations, you can repair your stack\nusing 'pulumi stack export' to export your stack to a file. For each operation that succeeded,\nremove that operation from the \"pending_operations\" section of the file. Once this is complete,\nuse 'pulumi stack import' to import the repaired stack.\n\nrefusing to proceed\n",
+    "code": 255
+  },
+  "name": "CommandError"
+}
+```
+
+```bash
+
+pulumi login <BACKEND> # exemple: pulumi login gs://ysamir-data-processing-test_pulumi
+export PULUMI_CONFIG_PASSPHRASE=''
+pulumi stack export --file faq/exportedAPI.json # contient la pending_operation
+# il faut supprimer la pendinf_operation puis
+pulumi stack import --file faq/apiToImport.json #choisir la stack et le pb devrait etre corrigé
+
+```
+###  Supprimer une stack en ligne de commande
+```bash
+pulumi login <BACKEND> # exemple: pulumi login gs://ysamir-data-processing-test_pulumi
+export PULUMI_CONFIG_PASSPHRASE=''
+pulumi stack rm <STACK_NAME> -f # exemple: pulumi stack rm rdo-test -f
+# n'oublier pas de confirmer le nom de la stack
+```
