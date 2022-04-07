@@ -1,0 +1,31 @@
+PATCH http://localhost:3000/cloudrun
+Content-Type: application/json
+
+{
+    "pulumiProjectName": "nest-pubsub-api-v1",
+    "pulumiStackName": "nest-pubsub-api-v1",
+    "gcpProjectId": "ysamir-data-processing-test",
+    "gcpRegion": "europe-west1",
+    "imageName": "nest-pubsub-api",
+    "dockerImage": "eu.gcr.io/ysamir-data-processing-test/nest-pubsub-api:1.0.0",
+    "resourceName": "nest-pubsub-api",
+    "serviceName": "nest-pubsub-api",
+    "ports": [{
+        "containerPort": 3000
+    }],
+    "resources": {
+        "limits": {
+            "memory": "512Mi"
+        }
+    },
+    "containerConcurrency": 1,
+    "envs": [{
+            "name": "PUBSUB_CLIENT_ID",
+            "value": "pubsub-nest-api"
+        },
+        {
+            "name": "PUBSUB_TOPIC_INPUT_DATA",
+            "value": "projects/ysamir-data-processing-test/topics/input-data"
+        }
+    ]
+}

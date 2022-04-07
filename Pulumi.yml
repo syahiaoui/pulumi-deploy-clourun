@@ -1,0 +1,6 @@
+name: pulumi-cloud-run-deployer
+description: deploy apps to cloudRun
+runtime:
+    name: nodejs
+    options:
+        typescript: true
