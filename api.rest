@@ -1,3 +1,6 @@
+GET http://localhost:3000/cloudrun/stacks?projectName=nest-pubsub-api-v1&runtime=nodejs
+
+####
 PATCH http://localhost:3000/cloudrun
 Content-Type: application/json
 
