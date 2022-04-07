@@ -43,6 +43,9 @@ export const cloudRunSchema = {
     containerConcurrency: {
       type: 'number',
     },
+    allowUnauthenticated: {
+      type: 'boolean',
+    },
     ports: {
       type: 'array',
       items: {

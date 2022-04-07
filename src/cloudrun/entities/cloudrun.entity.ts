@@ -8,6 +8,7 @@ export interface CloudRunTemplate {
   resourceName: string;
   serviceName: string;
   containerConcurrency: number;
+  allowUnauthenticated: boolean;
   ports: {
     containerPort: number;
     name?: string;

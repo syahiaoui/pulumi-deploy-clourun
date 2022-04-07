@@ -7,6 +7,7 @@ import {
   ProjectRuntimeInfo,
   PulumiFn,
 } from '@pulumi/pulumi/automation';
+import { Output } from '@pulumi/pulumi';
 
 import { PulumiService } from '../pulumi/pulumi.service';
 
@@ -58,6 +59,18 @@ export class CloudrunService {
     });
   }
 
+  private allowUnauthenticated(
+    template: CloudRunTemplate,
+    service: Output<string>,
+  ): gcp.cloudrun.IamMember {
+    return new gcp.cloudrun.IamMember('everyone', {
+      service,
+      location: template.gcpRegion,
+      role: 'roles/run.invoker',
+      member: 'allUsers',
+    });
+  }
+
   private cloudRunSpec(template: CloudRunTemplate): PulumiFn {
     return async (): Promise<any> => {
       await this.enableCloudRunService(template);
@@ -89,13 +102,10 @@ export class CloudrunService {
         },
         { dependsOn: dockerImage },
       );
-      //Open the service to public unrestricted access
-      new gcp.cloudrun.IamMember('everyone', {
-        service: inputService.name,
-        location: template.gcpRegion,
-        role: 'roles/run.invoker',
-        member: 'allUsers',
-      });
+      if (template.allowUnauthenticated) {
+        //Open the service to public unrestricted access
+        this.allowUnauthenticated(template, inputService.name);
+      }
 
       return {
         baseUrl: inputService.statuses[0].url,
